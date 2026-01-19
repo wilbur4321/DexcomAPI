@@ -179,19 +179,23 @@ std::vector<GlucoseData> Dexcom::getGlucose(int minutes, int maxCount)
   {
     JsonObject obj = array[i];
 
-    int glucose = obj["Value"] | -1;
-    String strTrend = obj["Trend"] | "";
+    if (!(obj["Value"].is<int>() && obj["Trend"].is<String>() && obj["WT"].is<String>()) ||
+        !(obj["WT"].as<String>().startsWith("Date(")))
+    {
+      _debug.printf("Invalid data format: %s\n", results.c_str());
+      continue;
+    }
+
+    int glucose = obj["Value"].as<int>();
+    String strTrend = obj["Trend"].as<String>();
     GlucoseTrend trend = getTrendType(strTrend);
 
     unsigned long long timestamp = 0;
-    String wtStr = obj["WT"] | "";
-    if (wtStr.startsWith("Date("))
-    {
-      String inner = wtStr.substring(5, wtStr.indexOf(')'));
-      inner.replace("-", "");
-      inner.replace("+", "");
-      timestamp = strtoull(inner.c_str(), nullptr, 10);
-    }
+    String wtStr = obj["WT"].as<String>();
+    String inner = wtStr.substring(5, wtStr.indexOf(')'));
+    inner.replace("-", "");
+    inner.replace("+", "");
+    timestamp = strtoull(inner.c_str(), nullptr, 10);
 
     GlucoseRange range = getRange(glucose);
     GlucoseAdvTrend advTrend = getAdvTrendType(glucose, trend);
