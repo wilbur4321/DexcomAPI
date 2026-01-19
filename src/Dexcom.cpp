@@ -1,6 +1,6 @@
 #include "Dexcom.h"
 
-Dexcom::Dexcom(bool ous)
+Dexcom::Dexcom(bool ous, Print &debug) : _debug(debug)
 {
   if (ous)
   {
@@ -60,7 +60,7 @@ String Dexcom::post(const char *url, const char *postData)
 
   if (!client.connect(_base_url.c_str(), 443))
   {
-    Serial.println("Connection to host failed");
+    _debug.println("Connection to host failed");
     return "";
   }
 
@@ -160,14 +160,14 @@ std::vector<GlucoseData> Dexcom::getGlucose(int minutes, int maxCount)
   DeserializationError error = deserializeJson(doc, results);
   if (error)
   {
-    Serial.printf("JSON parse error: %s\n", error.c_str());
+    _debug.printf("JSON parse error: %s\n", error.c_str());
     return {};
   }
 
   JsonArray array = doc.as<JsonArray>();
   if (array.isNull() || array.size() == 0)
   {
-    Serial.println("No data");
+    _debug.println("No data");
     return {};
   }
 
