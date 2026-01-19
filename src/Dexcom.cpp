@@ -1,15 +1,12 @@
 #include "Dexcom.h"
 
-Dexcom::Dexcom(bool ous, Print &debug) : _debug(debug)
+Dexcom::Dexcom(Print &debug) : _debug(debug)
 {
-  if (ous)
-  {
-    _base_url = DEXCOM_BASE_URL_OUS;
-  }
 }
 
-bool Dexcom::createSession(const String &username, const String &password)
+bool Dexcom::createSession(const String &username, const String &password, bool ous)
 {
+  _base_url = ous ? DEXCOM_BASE_URL_OUS : DEXCOM_BASE_URL;
   String accountId = getAccountId(username, password);
   _session_id = getSessionId(accountId, password);
 

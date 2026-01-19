@@ -17,8 +17,8 @@
 class Dexcom
 {
 public:
-    Dexcom(bool ous = false, Print &debug = Serial);
-    bool createSession(const String &username, const String &password);
+    Dexcom(Print &debug = Serial);
+    bool createSession(const String &username, const String &password, bool ous = false);
     GlucoseData getLastGlucose();
     std::vector<GlucoseData> getGlucose(int minutes, int maxCount);
 
