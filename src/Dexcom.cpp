@@ -141,10 +141,14 @@ String Dexcom::post(const char *url, const char *postData)
       if (json.indexOf("accountName") != -1) accountStatus = DexcomStatus::UsernameNullEmpty;
       else if (json.indexOf("password") != -1) accountStatus = DexcomStatus::PasswordNullEmpty;
     }
+    _debug.printf("Error 500 response: %s\n", json.c_str());
     return "";
   }
 
-  if (responseCode != 200) return "";
+  if (responseCode != 200) {
+    _debug.printf("HTTP error: %d: %s\n", responseCode, body.c_str());
+    return "";
+  }
   return body;
 }
 std::vector<GlucoseData> Dexcom::getGlucose(int minutes, int maxCount)
